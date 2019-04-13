@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhiyou.video.mapper.UserMapper">
+	
+	<resultMap type="Video" id="VideoResult">
+		<id property="id" column="id"/>
+		<result property="videoImageUrl" column="video_image_url"/>
+		<result property="videoTitle" column="video_title"/>
+		<result property="videoPlayTimes" column="video_play_times"/>
+		<result property="videoLength" column="video_length"/>
+		<result property="videoUrl" column="video_url"/>
+	</resultMap>
+	
+	<resultMap type="Course" id="CourseResult">
+  		<result column="course_name" property="courseName"/>
+  		<result column="course_desc" property="courseDesc"/>
+  		<result column="subject_id" property="subjectId"/>
+  		<result column="subject_name" property="subjectName"/>
+  		<collection property="videoList" resultMap="VideoResult" />
+  	</resultMap>
+	
+	<select id="getUserByEmail" parameterType="String" resultType="User" >
+		select 
+		password as passWord,head_url as headUrl,nick_name as nickName,sex,birthday,email,province,city 
+		from user where email=#{email}
+	</select>
+	
+	<insert id="registUser" parameterType="User">
+		insert into user 
+		(email,password,insert_time) 
+		values (#{email},#{passWord},#{insertTime})
+	</insert>
+	
+	
+	<update id="updateUser" parameterType="User">
+	
+		update user 
+		<set>
+			<if test="nickName!=null and nickName!=''">
+				nick_name=#{nickName},
+			</if>
+			<if test="sex!=null and sex!=''">
+				sex=#{sex},
+			</if>
+			<if test="headUrl!=null and headUrl!=''">
+				 head_url=#{headUrl},
+			</if>
+			<if test="passWord!=null and passWord=''">
+				password=#{newPassWord},
+			</if>
+			<if test="birthday!=null and birthday!=''">
+				birthday=#{birthday},
+			</if>
+			<if test="email!=null and email!=''">
+				email=#{email},
+			</if>
+			<if test="province!=null and province!=''">
+				province=#{province},
+			</if>
+			<if test="city!=null and city!=''">
+				city=#{city}
+			</if>
+			
+		</set>
+		where email=#{email}
+		 
+		 <!-- update user set
+		 <foreach collection="_parameter" index="key" item="val" separator=",">
+		 	${key}=#{val}
+		 </foreach>
+		 where email=#{email} -->
+	</update>
+	
+	<update id="updateTest" parameterType="java.util.Map">
+		update user set 
+		<foreach collection="_parameter" index="key" item="val" separator=",">
+			${key}=#{val}
+		</foreach>
+		where email=#{email}
+	</update>
+	
+	<select id="getCourseById" parameterType="int" resultMap="CourseResult">
+		select course_name,course_descr,v.id,v.video_title,v.video_image_url,v.video_url,v.video_play_times 
+		from course inner join video v on(v.course_id=course.id) where course.subject_id=#{subjectId}
+	</select>
+
+	<select id="getSubjectById" parameterType="int" resultType="Subject">
+		select id as subjectId,subject_name as subjectName from subject where id=#{subjectId}
+	</select>
+	<!-- 
+	<select id="getVideoByVidAndSid" parameterType="int" resultType="Video">
+		select v.* from video v inner join course c on(c.course_id=v.course_id) 
+		inner join subject s on (s.subject_id=c.subject_id) 
+		where video_id=#{videoId} and c.subject_id=#{subjectId}
+	</select>
+	
+ -->	
+ 	<select id="getAllVideo" parameterType="int" resultMap="VideoResult">
+		select v.*,sp.speaker_name as speakerName from video v  left JOIN speaker sp on(v.speaker_id=sp.id) where v.course_id=#{courseId}
+
+	</select>
+	<!-- 
+	<select id="getVideoById" parameterType="int" resultMap="VideoResult">
+		select * from video where video_id=#{videoId}
+	</select> -->
+	
+	<select id="getAllUser"  resultType="User">
+		select
+		id as userId,email,nick_name as nickName,sex,birthday,province,city ,insert_time as insertTime 
+		from user
+	</select>
+	
+	
+</mapper>
+
+
+

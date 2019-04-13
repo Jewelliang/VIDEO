@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="com.zhiyou.video.mapper.SysUserMapper">
+  
+      <select id="getUserByName" parameterType="String" resultType="SysUser">
+           
+           select id,username,password,salt,role_ids as roleIds,locked  from sys_user 
+           where username=#{username}
+      
+      </select>
+      
+      <select id="getAllSysUser" resultType="SysUser">
+      	select id,username,password,role_ids as roleIds from sys_user
+      </select>
+      
+      <insert id="addSysUser" parameterType="SysUser" useGeneratedKeys="true" keyProperty="sysUser.id">
+      	insert into sys_user 
+      	(username,password,role_ids,salt,locked)
+      	values 
+      	(#{username},#{password},#{roleIds},#{salt},1) 
+      
+      </insert>
+      <delete id="deleteSysUser" parameterType="Integer">
+      		delete from sys_user  where id = #{sysUserId}
+      </delete>
+  
+  </mapper>

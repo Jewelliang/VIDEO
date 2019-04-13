@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhiyou.video.mapper.CourseMapper">
+	
+	<resultMap type="java.util.Map" id="VideoResult">
+		<result property="id" column="id"/>
+		<result property="videoImageUrl" column="video_image_url"/>
+		<result property="videoTitle" column="video_title"/>
+		<result property="videoPlayTimes" column="video_play_times"/>
+		<result property="videoLength" column="video_length"/>
+	</resultMap>
+	
+	<resultMap type="java.util.Map" id="CourseWithVideoNestedResult">
+  		<id 	column="id" property="id"/>
+  		<result column="course_name" property="courseName"/>
+  		<result column="course_descr" property="courseDescr"/>
+  		<result column="subject_id" property="subjectId"/>
+  		<result column="subject_name" property="subjectName"/>
+  		
+  		<collection property="videoList" resultMap="VideoResult" />
+  	</resultMap>
+	
+	<select id="getAllCourses"  resultType="Course" >
+
+		select 
+		course.id,
+		course_name as courseName,
+		subject_name as subjectName,
+		course_descr  as courseDescr 
+		from course 
+		inner join subject s 
+		on (course.subject_id=s.id) 
+		
+	</select>
+	
+	<select id="getSubjects"  parameterType="java.util.Map"  resultType="Course">
+		select 
+		id ,
+		course_name as courseName,
+		from course 
+		
+	</select>
+
+	<insert id="addCourse" parameterType="Course">
+		insert into course 
+		(course_name,
+		subject_id,
+		course_descr,
+		insert_time) 
+		values 
+		(#{courseName},#{subjectId},#{courseDescr},#{insertTime})
+		
+	</insert>
+	
+	<select id="getCourseById" parameterType="int" resultType="Course">
+		select 
+		c.id ,
+		course_name as courseName,
+		subject_name as subjectName,
+		course_descr as courseDescr 
+		from course c
+		inner join subject s 
+		on (c.subject_id=s.id) 
+		where c.id=#{courseId}
+	</select>
+	
+	<select id="getCourseBySubjectId" parameterType="int" resultType="Course">
+		select course_name,
+		course_descr,
+		v.id,
+		v.video_title,
+		v.video_image_url,
+		v.video_url,
+		v.video_play_times 
+		from course 
+		inner join video v 
+		on(v.course_id=course.id) 
+		where 
+		course.subject_id=#{subjectId}
+	</select>
+	
+	<update id="updateCourse" parameterType="Course" >
+		update course 
+		set course_name=#{courseName},
+			subject_id=#{subjectId},
+			course_descr=#{courseDescr},
+			update_time=#{updateTime} 
+		where id=#{courseId}
+	</update>
+	
+	<delete id="deleteCourse" parameterType="int">
+		delete from course 
+		where id=#{courseId}
+	</delete>
+	
+	
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

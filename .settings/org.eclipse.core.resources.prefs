@@ -1,0 +1,8 @@
+eclipse.preferences.version=1
+encoding//src/main/java/com/zhiyou/video/service/impl/UserServiceImpl.java=UTF-8
+encoding//src/main/webapp/WEB-INF/view/admin/state/index.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/view/admin/sysuser/add.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/view/admin/video/index.jsp=UTF-8
+encoding//src/main/webapp/static/css/css.css=UTF-8
+encoding/<project>=UTF-8
+separateDerivedEncodings=true

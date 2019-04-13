@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhiyou.video.mapper.VideoMapper">
+	
+	<resultMap type="Video" id="VideoMap">
+		<id property="id" column="id" />
+		<result property="videoTitle" column="video_title" />
+		<result property="speakerId" column="speaker_id" />
+		<result property="courseId" column="course_id" />
+		<result property="videoLength" column="video_length" />
+		<result property="videoImageUrl" column="video_image_url" />
+		<result property="videoUrl" column="video_url" />
+		<result property="videoDescr" column="video_descr" />
+		<result property="insertTime" column="insert_time" />
+		<result property="updateTime" column="update_time" />
+		<result property="videoPlayTimes" column="video_play_times" />
+		<result property="speakerName" column="speaker_name" />
+		<result property="courseName" column="course_name" />
+	</resultMap>
+	
+	<select id="videoCount" parameterType="java.util.Map"  resultType="int">
+		select count(*) from video 
+		<where>
+			<if test="queryName!=null and queryName!=''">
+				v.video_title like '%${queryName}%'
+			</if>
+			<if test="speakerId!=null and speakerId>0">
+				and v.speaker_id= #{speakerId}
+			</if>
+			<if test="courseId!=null and courseId>0">
+				and v.course_id=#{courseId}
+			</if>
+		</where>	
+	</select>
+	
+	<select id="getVideos" parameterType="java.util.Map" resultMap="VideoMap">
+		select v.*,sp.speaker_name,c.course_name   
+		from video as v 
+		inner join speaker as sp 
+		on (v.speaker_id=sp.id) 
+		inner join course as  c 
+		on (v.course_id=c.id) 
+		<where>
+			<if test="queryName!=null and queryName!=''">
+				v.video_title like '%${queryName}%'
+			</if>
+			<if test="speakerId!=null and speakerId>0">
+				and v.speaker_id= #{speakerId}
+			</if>
+			<if test="courseId!=null and courseId>0">
+				and v.course_id=#{courseId}
+			</if>
+			
+		</where>
+		<if test="start != null">
+			limit #{start},#{pageSize}
+		</if>
+	</select> 
+
+	<delete id="batchDelete"> 
+		delete from video where id in 
+	  <foreach collection="videos" item="video" open="(" close=")" separator=",">
+	    #{video.id} 
+	  </foreach>
+
+	</delete>
+
+	 <select id="getChartData" resultType="java.util.Map">
+          
+     select v.course_id,c.course_name,round(avg(video_play_times)) avgTimes 
+		from video v,course c 
+		where v.course_id=c.id 
+		group by v.course_id,c.course_name
+     
+     </select>
+     
+     <insert id="addVideo" parameterType="Video">
+     	insert into video 
+	     	(video_title,speaker_id,
+	     	course_id,
+	     	video_length ,video_image_url,
+	     	video_url,insert_time,video_descr)
+     	values (#{videoTitle},#{speakerId},
+	     	#{courseId},
+	     	#{videoLength},#{videoImageUrl},
+	     	#{videoUrl},#{insertTime},#{videoDescr})
+     </insert>
+	
+	 
+	 <select id="getVideoById" parameterType="int" resultMap="VideoMap">
+		select v.*,sp.speaker_name,
+		c.course_name    
+		from video as v 
+		inner join speaker as sp 
+		on (v.speaker_id=sp.id) 
+		inner join course as  c 
+		on (v.course_id=c.id) 
+		inner join subject as s 
+		on (c.subject_id=s.id) 
+		where v.id=#{id}
+	 </select>
+	  
+	 
+	  
+	 <update id="updateVideo" parameterType="Video">
+	 	update video 
+	 	set video_title=#{videoTitle},
+	 	video_image_url=#{videoImageUrl},
+	 	video_url=#{videoUrl},
+	 	video_length=#{videoLength},
+	 	speaker_id=#{speakerId},
+	 	course_id=#{courseId},
+		insert_time=#{insertTime},
+		update_time=#{updateTime},
+	 	video_descr=#{videoDescr} 
+	 	where video_id=#{videoId}
+	 </update>
+
+     <delete id="deleteVideo" parameterType="int">
+     	delete from video 
+     	where id=#{id}
+     </delete>
+</mapper>
